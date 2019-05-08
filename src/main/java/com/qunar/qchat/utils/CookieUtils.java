@@ -1,5 +1,6 @@
 package com.qunar.qchat.utils;
 
+import com.qunar.qchat.constants.BasicConstant;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,9 @@ public class CookieUtils {
                         String val = cookie.getValue();
                         byte[] original  = base64.decode(val);
                         String originalString = new String(original, "UTF8");// 重新显示明文
-                        String[] list = originalString.split("&");
+                        String[] list = originalString.split(BasicConstant.CKEY_SPLITTER);
                         for(String str:list){
-                            String[] m = str.split("=");
+                            String[] m = str.split(BasicConstant.CKEY_JOINER);
                             map.put(m[0], m[1]);
                         }
                     }catch (Exception e)

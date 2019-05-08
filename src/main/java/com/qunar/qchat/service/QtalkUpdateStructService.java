@@ -2,12 +2,17 @@ package com.qunar.qchat.service;
 
 
 import com.google.common.base.Strings;
+import com.qunar.qchat.constants.BaseCode;
+import com.qunar.qchat.constants.BasicConstant;
+import com.qunar.qchat.constants.DepVisibleType;
 import com.qunar.qchat.dao.IUserInfo;
 import com.qunar.qchat.dao.model.UserInfoQtalk;
 import com.qunar.qchat.model.JsonResult;
 import com.qunar.qchat.model.UpdateStructResultMode;
 import com.qunar.qchat.utils.CookieUtils;
 import com.qunar.qchat.utils.JsonResultUtils;
+import com.qunar.qchat.utils.RedisUtil;
+import com.sun.org.apache.bcel.internal.generic.SWITCH;
 import jodd.util.CollectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
+import javax.naming.ldap.PagedResultsControl;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,35 +44,75 @@ public class QtalkUpdateStructService {
     @Autowired
     private SendNotifySeivice sendNotifySeivice;
 
-    public JsonResult<?> getQtalk(Integer version, String domian) {
-        UpdateStructResultMode updateStructResultMode = new UpdateStructResultMode();
+    @Autowired
+    private RedisUtil redisUtil;
+
+    public JsonResult<?> getQtalk(Integer version, String domian,String userId) {
         try {
             Integer hostId = iUserInfo.getHostInfo(domian);
-            Integer curVersion = iUserInfo.selectMaxVersion(hostId);
-            if (curVersion <= version) {
-                updateStructResultMode.setVersion(curVersion);
-                updateStructResultMode.setUpdate(new LinkedList<>());
-                updateStructResultMode.setDelete(new LinkedList<>());
-                return JsonResultUtils.success(updateStructResultMode);
+            UserInfoQtalk curUser = iUserInfo.selectUserByUserId(userId,hostId);
+            if(curUser==null){
+                LOGGER.warn("get the qtalk structure fail due to the curUser is illegal");
+                return JsonResultUtils.fail(BaseCode.OP_NOT_SUPPORT.getCode(),BaseCode.OP_NOT_SUPPORT.getMsg());
             }
-            List<UserInfoQtalk> users = iUserInfo.getQtalkUsersByVersion(version, hostId);
-            if (users == null) {
-                users = new ArrayList<>();
+            String curDep = curUser.getDepartment();
+            Integer depVisibleSetType = redisUtil.get(1, BasicConstant.DEP_VISIBLE_REDIS_KEY,Integer.class);
+            DepVisibleType depVisibleType = DepVisibleType.of(depVisibleSetType);
+            if(depVisibleSetType==null){
+                depVisibleType = DepVisibleType.ALL;
             }
-            List<UserInfoQtalk> onJobUsers = users.stream().filter(QtalkUpdateStructService::filterOutLeaveUser).collect(Collectors.toList());
-            List<UserInfoQtalk> delete = new ArrayList<>();
-            List<UserInfoQtalk> add = new ArrayList<>();
-            add.addAll(onJobUsers);
-            users.removeAll(onJobUsers);
-            delete = users;
-            updateStructResultMode.setDelete(delete);
-            updateStructResultMode.setUpdate(add);
-            updateStructResultMode.setVersion(curVersion);
+            JsonResult result = new JsonResult();
+            switch (depVisibleType) {
+                case ALL:
+                    result =  getAllUser(hostId,version);
+                    break;
+                case NONE:
+                    break;
+                case INNER:
+                    break;
+                case SPECIFIC:
+                    break;
+            }
+
+
         } catch (Exception e) {
             LOGGER.error("get qtalk qunar struct fail", e);
             return JsonResultUtils.fail(500, "服务器内部错误");
         }
+        return JsonResultUtils.success();
+    }
+
+
+
+    public JsonResult getAllUser(Integer hostId,Integer version){
+        UpdateStructResultMode updateStructResultMode = new UpdateStructResultMode();
+       try {
+           Integer curVersion = iUserInfo.selectMaxVersion(hostId);
+           if (curVersion <= version) {
+               updateStructResultMode.setVersion(curVersion);
+               updateStructResultMode.setUpdate(new LinkedList<>());
+               updateStructResultMode.setDelete(new LinkedList<>());
+               return JsonResultUtils.success(updateStructResultMode);
+           }
+           List<UserInfoQtalk> users = iUserInfo.getQtalkUsersByVersion(version, hostId);
+           if (users == null) {
+               users = new ArrayList<>();
+           }
+           List<UserInfoQtalk> onJobUsers = users.stream().filter(QtalkUpdateStructService::filterOutLeaveUser).collect(Collectors.toList());
+           List<UserInfoQtalk> delete = new ArrayList<>();
+           List<UserInfoQtalk> add = new ArrayList<>();
+           add.addAll(onJobUsers);
+           users.removeAll(onJobUsers);
+           delete = users;
+           updateStructResultMode.setDelete(delete);
+           updateStructResultMode.setUpdate(add);
+           updateStructResultMode.setVersion(curVersion);
+       }catch (Exception e){
+           LOGGER.error("get qtalk qunar struct fail", e);
+           return JsonResultUtils.fail(500, "服务器内部错误");
+       }
         return JsonResultUtils.success(updateStructResultMode);
+
     }
 
     public static boolean filterOutLeaveUser(UserInfoQtalk userInfoQtalk) {

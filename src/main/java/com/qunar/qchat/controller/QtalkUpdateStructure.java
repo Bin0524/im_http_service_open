@@ -3,6 +3,7 @@ package com.qunar.qchat.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
+import com.qunar.qchat.constants.BasicConstant;
 import com.qunar.qchat.constants.Config;
 import com.qunar.qchat.model.JsonResult;
 import com.qunar.qchat.service.QtalkUpdateStructService;
@@ -41,9 +42,10 @@ public class QtalkUpdateStructure {
     @RequestMapping(value = "/getUpdateUsers.qunar", method = RequestMethod.POST)
     public JsonResult<?> updateStructure(HttpServletRequest request, @RequestBody String param) {
         Map<String, Object> qckey = CookieUtils.getUserbyCookie(request);
-        String domain = (String) qckey.get("d");
-        if (Strings.isNullOrEmpty(domain)) {
-            return JsonResultUtils.fail(1, "请指定域");
+        String domain = (String) qckey.get(BasicConstant.CKEY_USERDOMAIN);
+        String userId = (String) qckey.get(BasicConstant.CKEY_USERID);
+        if (Strings.isNullOrEmpty(domain) || Strings.isNullOrEmpty(userId)) {
+            return JsonResultUtils.fail(1, "ckey参数缺失");
         }
         JSONObject receivedParam = JSON.parseObject(param);
         Integer clientUserInfoVersion = (Integer) receivedParam.get("version");
@@ -51,7 +53,7 @@ public class QtalkUpdateStructure {
             return JsonResultUtils.fail(1, "无效version");
         }
         LOGGER.info("get the users info the client users info version is：{},domain is：{}", clientUserInfoVersion, domain);
-        return qchatUpdateStructService.getQtalk(clientUserInfoVersion, domain);
+        return qchatUpdateStructService.getQtalk(clientUserInfoVersion, domain,userId);
     }
 
 
