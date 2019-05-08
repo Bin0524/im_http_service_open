@@ -78,4 +78,6 @@ public class UserInfoQtalk {
     @JsonIgnore
     private String leader;
 
+    private String role;
+
 }

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qunar.qchat.dao.IUserRoleMapper">
+
+
+    <insert id="insertRoleSelective" parameterType="com.qunar.qchat.dao.model.UserRoleModel">
+        insert into startalk_user_role_table
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName != null">
+                role_name,
+            </if>
+            <if test="availableFlag != null">
+                available_flag,
+            </if>
+            <if test="classId != null">
+                class_id,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roleName != null">
+                #{roleName,jdbcType=VARCHAR},
+            </if>
+            <if test="availableFlag != null">
+                #{availableFlag,jdbcType=INTEGER},
+            </if>
+            <if test="classId != null">
+                #{classId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertRoleClassSelective"
+            parameterType="com.qunar.qchat.dao.model.UserRoleClassModel">
+        insert into startalk_role_class
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleClass != null">
+                role_class,
+            </if>
+            <if test="availableFlag != null">
+                available_flag,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roleClass != null">
+                #{roleClass,jdbcType=VARCHAR},
+            </if>
+            <if test="availableFlag != null">
+                #{availableFlag,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+
+    <select id="selectAllRole" resultType="com.qunar.qchat.dao.model.UserRoleModel">
+        select id as  id,
+        role_name as roleName,
+        class_id as classId
+        from startalk_user_role_table where available_flag=1;
+    </select>
+
+
+    <select id="selectUserRoleAvailable" parameterType="java.lang.String" resultType="java.lang.Integer">
+       select available_flag from startalk_user_role_table where role_name=#{roleName} limit 1;
+   </select>
+
+    <select id="selectRoleClassAvailable" parameterType="java.lang.String" resultType="java.lang.Integer">
+       select available_flag from startalk_role_class where role_class=#{roleClass} limit 1;
+   </select>
+
+
+    <select id="selectAvailableUseRoleClass"
+            resultType="com.qunar.qchat.dao.model.UserRoleClassModel">
+        select role_class as roleClass,
+        id as id
+          from startalk_role_class where available_flag=1;
+    </select>
+
+    <update id="updateUserRoleAvailable">
+    update startalk_user_role_table set available_flag=#{avaFlag} where role_name=#{roleName};
+</update>
+    <update id="updateRoleClassAvailable">
+        update startalk_role_class set available_flag=#{avaFlag} where role_class=#{roleClass};
+    </update>
+
+    <select id="selectAllRoleClass" resultType="com.qunar.qchat.dao.model.UserRoleClassModel">
+    select id as id,
+    role_class as roleClass
+     from startalk_role_class where available_flag=1;
+</select>
+
+<update id="updateRole" parameterType="com.qunar.qchat.dao.model.UserRoleModel">
+    update startalk_user_role_table set
+    <if test="roleName != null">
+        role_name=#{roleName},
+    </if>
+    <if test="classId != null">
+        class_id=#{classId}
+    </if>
+     where
+    id=#{id};
+</update>
+<update id="updateRoleAvailable">
+    update startalk_user_role_table set available_flag=#{availFlag} where id=#{roleId};
+</update>
+
+    <select id="selectRoleNameById" resultType="java.lang.String" parameterType="java.lang.Integer">
+        SELECT role_name FROM startalk_user_role_table WHERE id=#{id};
+    </select>
+</mapper>

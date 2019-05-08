@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--*********************************************************************-->
+<!---***********************host_users insert****************************-->
+<!--*********************************************************************-->
+<mapper namespace="com.qunar.qchat.dao.IUserDepDao">
+    <!--*******************************************************************************-->
+    <!---***********************insert into start_dep_table********************-->
+    <!--*******************************************************************************-->
+    <select id="selectDepInfo" parameterType="java.lang.String" resultType="com.qunar.qchat.dao.model.UserDepModel">
+      select
+      id as id,
+      dep_name as depName,
+      dep_level as depLevel,
+      parent_id as parentId,
+      dep_leader as depLeader,
+      dep_visible as depVisible,
+      dep_vp as depVp,
+      dep_hr as depHr
+      from startalk_dep_table where dep_name = #{depName} and delete_flag=0;
+    </select>
+
+
+</mapper>

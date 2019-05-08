@@ -5,11 +5,14 @@ import com.google.common.base.Strings;
 import com.qunar.qchat.constants.BaseCode;
 import com.qunar.qchat.constants.BasicConstant;
 import com.qunar.qchat.dao.IHostInfoDao;
+import com.qunar.qchat.dao.IUserDepDao;
 import com.qunar.qchat.dao.IUserInfo;
 import com.qunar.qchat.dao.model.HostInfoModel;
+import com.qunar.qchat.dao.model.UserDepModel;
 import com.qunar.qchat.dao.model.UserInfoQtalk;
 import com.qunar.qchat.model.GetTelResult;
 import com.qunar.qchat.model.JsonResult;
+import com.qunar.qchat.model.UserInfoOaReturn;
 import com.qunar.qchat.model.request.GetLeaderRequest;
 import com.qunar.qchat.model.request.GetMobileRequest;
 import com.qunar.qchat.utils.JacksonUtils;
@@ -30,6 +33,9 @@ public class GetUserExtInfoService {
 
     @Resource
     private IHostInfoDao iHostInfoDao;
+
+    @Resource
+    private IUserDepDao iUserDepDao;
 
     /**
      * 获取用户手机号
@@ -110,5 +116,44 @@ public class GetUserExtInfoService {
         }
         return true;
     }
+
+    public UserInfoOaReturn getOaInfo(String userId,String host){
+        HostInfoModel hostInfoModel;
+        UserInfoOaReturn oaInfo = new UserInfoOaReturn();
+        if(Strings.isNullOrEmpty(host)){
+            hostInfoModel = iHostInfoDao.selectDefaultHost();
+        }else {
+            hostInfoModel = iHostInfoDao.selectHostInfoByHostName(host);
+        }
+        UserInfoQtalk curUser = iUserInfo.selectUserByUserId(userId,hostInfoModel.getId());
+        if(curUser==null){
+            return null;
+        }
+        oaInfo.setUserId(userId);
+        oaInfo.setUserName(curUser.getUser_name());
+        oaInfo.setDepartment(curUser.getDepartment());
+        oaInfo.setTL(curUser.getLeader());
+        oaInfo.setUserRole(curUser.getRole());
+        UserDepModel userDepModel = iUserDepDao.selectDepInfo(curUser.getDepartment());
+        oaInfo.setDepVP(userDepModel.getDepVp());
+        return oaInfo;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
