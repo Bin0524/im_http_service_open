@@ -17,7 +17,6 @@
       dep_level as depLevel,
       parent_id as parentId,
       dep_leader as depLeader,
-      dep_visible as depVisible,
       dep_vp as depVp,
       dep_hr as depHr
       from startalk_dep_table where dep_name = #{depName} and delete_flag=0;
