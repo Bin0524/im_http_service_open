@@ -40,8 +40,8 @@ public class QGetTheUserExtInfoController {
     @PostMapping("/getOa.qunar")
     @ResponseBody
     public JsonResult getOa(@RequestBody String  param) {
+        log.info("getOa.qunar the param is {}",param);
         JSONObject jsonObject = JSONObject.parseObject(param);
-
         String userId = jsonObject.getString("userId");
         String host = jsonObject.getString("host");
         if(Strings.isNullOrEmpty(userId)){

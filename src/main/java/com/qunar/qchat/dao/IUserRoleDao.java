@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public interface IUserRoleMapper {
+public interface IUserRoleDao {
 
-    void insertRoleSelective(IUserRoleMapper startalkRoleModel);
+    void insertRoleSelective(IUserRoleDao startalkRoleModel);
 
     Integer selectUserRoleAvailable(@Param("roleName") String roleName);
 
@@ -25,12 +25,12 @@ public interface IUserRoleMapper {
 
     List<UserRoleClassModel> selectAvailableUseRoleClass();
 
-    List<IUserRoleMapper> selectAllRole();
+    List<IUserRoleDao> selectAllRole();
 
 
     List<UserRoleClassModel>selectAllRoleClass();
 
-    void updateRole(IUserRoleMapper startalkRoleModel);
+    void updateRole(IUserRoleDao startalkRoleModel);
 
     void updateRoleAvailable(@Param("roleId") Integer id, @Param("availFlag") Integer avFlag);
 

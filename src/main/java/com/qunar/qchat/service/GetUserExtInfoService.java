@@ -7,6 +7,7 @@ import com.qunar.qchat.constants.BasicConstant;
 import com.qunar.qchat.dao.IHostInfoDao;
 import com.qunar.qchat.dao.IUserDepDao;
 import com.qunar.qchat.dao.IUserInfo;
+import com.qunar.qchat.dao.IUserRoleDao;
 import com.qunar.qchat.dao.model.HostInfoModel;
 import com.qunar.qchat.dao.model.UserDepModel;
 import com.qunar.qchat.dao.model.UserInfoQtalk;
@@ -36,6 +37,9 @@ public class GetUserExtInfoService {
 
     @Resource
     private IUserDepDao iUserDepDao;
+
+    @Resource
+    private IUserRoleDao iUserRoleDao;
 
     /**
      * 获取用户手机号
@@ -133,8 +137,10 @@ public class GetUserExtInfoService {
         oaInfo.setUserName(curUser.getUser_name());
         oaInfo.setDepartment(curUser.getDepartment());
         oaInfo.setTL(curUser.getLeader());
-        oaInfo.setUserRole(curUser.getRole());
+        oaInfo.setHrbp(curUser.getHrbp());
         UserDepModel userDepModel = iUserDepDao.selectDepInfo(curUser.getDepartment());
+        String role = iUserRoleDao.selectRoleNameById(curUser.getRole());
+        oaInfo.setUserRole(role);
         oaInfo.setDepVP(userDepModel.getDepVp());
         return oaInfo;
     }
