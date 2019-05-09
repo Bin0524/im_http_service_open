@@ -140,7 +140,7 @@ public class GetUserExtInfoService {
         oaInfo.setHrbp(curUser.getHrbp());
         UserDepModel userDepModel = iUserDepDao.selectDepInfo(curUser.getDepartment());
         if(userDepModel!=null){
-            oaInfo.setDepLeader(userDepModel.getDepVp());
+            oaInfo.setDepLeader(userDepModel.getDepLeader());
         }
         String role = iUserRoleDao.selectRoleNameById(curUser.getRole());
         if(!Strings.isNullOrEmpty(role)){
