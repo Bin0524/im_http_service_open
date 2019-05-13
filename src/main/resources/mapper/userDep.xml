@@ -110,4 +110,23 @@
         where host_id=#{hostId} and user_id=#{userId};
     </select>
 
+    <select id="selectUserInfo"
+            resultType="com.qunar.qchat.model.UserInfo">
+        SELECT
+        host_users.user_id as user_id,
+        host_users.user_name as user_name,
+        host_users.gender as gender,
+        vcard_version.mood as mood,
+        vcard_version.url as url
+        FROM
+        (host_users inner join host_info on host_info.id = host_users.host_id)
+        left join vcard_version on host_info.host = vcard_version.host and vcard_version.username = host_users.user_id
+        where
+        (host_users.user_id, host_info.host) IN
+        <foreach collection="users" index="index" item="item" open="(" separator="," close=")">
+            (#{item.username}, #{item.host})
+        </foreach>
+        ;
+    </select>
+
 </mapper>

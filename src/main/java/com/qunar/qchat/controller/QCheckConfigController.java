@@ -73,6 +73,8 @@ public class QCheckConfigController {
         InputStream read = classPathResource.getInputStream();
         String config = new String(ByteStreams.toByteArray(read));
         ObjectMapper mapper = new ObjectMapper();
+
+
         CheckConfigResult params = mapper.readValue(config, CheckConfigResult.class);
         return params;
     }

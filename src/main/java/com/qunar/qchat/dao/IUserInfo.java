@@ -2,6 +2,8 @@ package com.qunar.qchat.dao;
 
 
 import com.qunar.qchat.dao.model.UserInfoQtalk;
+import com.qunar.qchat.model.UserInfo;
+import com.qunar.qchat.model.UserInfoParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -68,5 +70,9 @@ public interface IUserInfo {
 
 
     UserInfoQtalk selectUserByUserId(@Param("userId")String userId,@Param("hostId")Integer hostId);
+
+
+    List<UserInfo> selectUserInfo (
+            @Param("users") List<UserInfoParam.UsersEntity> users);
 
 }
