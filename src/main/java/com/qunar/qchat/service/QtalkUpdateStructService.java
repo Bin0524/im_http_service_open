@@ -62,24 +62,24 @@ public class QtalkUpdateStructService {
                 depVisibleType = DepVisibleType.ALL;
             }
             JsonResult result = new JsonResult();
-            switch (depVisibleType) {
-                case ALL:
-                    result =  getAllUser(hostId,version);
-                    break;
-                case NONE:
-                    break;
-                case INNER:
-                    break;
-                case SPECIFIC:
-                    break;
-            }
-
+//            switch (depVisibleType) {
+//                case ALL:
+//                    result =  getAllUser(hostId,version);
+//                    break;
+//                case NONE:
+//                    break;
+//                case INNER:
+//                    break;
+//                case SPECIFIC:
+//                    break;
+//            }
+       return getAllUser(hostId,version);
 
         } catch (Exception e) {
             LOGGER.error("get qtalk qunar struct fail", e);
             return JsonResultUtils.fail(500, "服务器内部错误");
         }
-        return JsonResultUtils.success();
+       // return JsonResultUtils.success();
     }
 
 
