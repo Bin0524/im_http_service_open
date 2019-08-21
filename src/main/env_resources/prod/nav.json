@@ -27,6 +27,7 @@
   },
   "ability": {
     "searchurl": "http://ip:8080/py/search",
+    "new_searchurl":"http://ip:8080/py/search",
     "showmsgstat": true
   },
   "RNAndroidAbility": {
